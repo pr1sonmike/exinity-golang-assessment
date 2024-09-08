@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_URL: "postgres://user:password@db/payment_service"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: payment_service
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
