@@ -1,19 +1,49 @@
 package config
 
 import (
-	"exinity-golang-assessment/internal/models"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"log"
-	"os"
+	"github.com/spf13/viper"
+	"time"
 )
 
-func InitDB() *gorm.DB {
-	dsn := os.Getenv("POSTGRES_URL")
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+type GatewayConfig struct {
+	Name        string        `mapstructure:"name"`
+	APIEndpoint string        `mapstructure:"api_endpoint"`
+	APITimeout  time.Duration `mapstructure:"api_timeout"`
+	Auth        struct {
+		Username string `mapstructure:"username"`
+		Password string `mapstructure:"password"`
+	} `mapstructure:"auth"`
+}
+
+type Config struct {
+	Database struct {
+		Host     string `mapstructure:"host"`
+		Port     int    `mapstructure:"port"`
+		User     string `mapstructure:"user"`
+		Password string `mapstructure:"password"`
+		DBName   string `mapstructure:"dbname"`
+		SSLMode  string `mapstructure:"sslmode"`
+	} `mapstructure:"database"`
+	Gateways []GatewayConfig `mapstructure:"gateways"`
+	Server   struct {
+		Port string `mapstructure:"port"`
+	} `mapstructure:"server"`
+}
+
+func LoadConfig(path string) (*Config, error) {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(path)
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		return nil, err
 	}
-	db.AutoMigrate(&models.Transaction{})
-	return db
+
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }

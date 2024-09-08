@@ -1,0 +1,24 @@
+database:
+  host: "db"
+  port: 5432
+  user: "user"
+  password: "password"
+  dbname: "payment_service"
+  sslmode: "disable"
+
+gateways:
+  - name: "GatewayA"
+    api_endpoint: "http://localhost:8080/api"
+    api_timeout: "10s"
+    auth:
+      username: "user_a"
+      password: "pass_a"
+  - name: "GatewayB"
+    api_endpoint: "http://localhost:8080/soap"
+    api_timeout: "10s"
+    auth:
+      username: "user_b"
+      password: "pass_b"
+
+server:
+  port: ":80"

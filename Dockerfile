@@ -2,14 +2,10 @@ FROM golang:1.22-alpine
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY . .
 
 RUN go mod download
 
-COPY . .
+RUN go build -o payment-service ./cmd/main.go
 
-RUN go build -o cmd .
-
-#EXPOSE 8080
-
-CMD ["./main"]
+CMD ["./payment-service"]
